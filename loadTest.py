@@ -96,7 +96,7 @@ def statistic(title,queue,file):
 
 
     print title
-    plt.hist(data, bins = (max-min)/0.01, color = 'steelblue', edgecolor = 'k', label = 'title')
+    plt.hist(data, bins = int((max-min)/0.01), color = 'steelblue', edgecolor = 'k', label = 'title')
     plt.title(title)
     plt.xlabel('Response time (s)')
     plt.ylabel('Count')
@@ -168,7 +168,7 @@ def processResponse(res,timeout,successQueue,timeoutQueue,failQueue,contract_id)
     else:
         print e
         print "exception",contract_id
-        failQueue.put("exception:"+contract_id)
+        failQueue.put(repr(e)+contract_id)
 
 
 def testGet(url,timeout,successQueue,timeoutQueue,failQueue,queueForId):
