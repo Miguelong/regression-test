@@ -142,6 +142,7 @@ def request_get_proxy(url,timeout):
 def request_post_proxy(url,contract_id,timeout):
     try:
         cmd="curl -w 'time_total: %{time_total}\n' '"+url+"' -X POST -H 'Content-Type:application/json' -H 'Authorization: Gridx hEwCQGumUL+vulFJKaiuUNzwr2v0ajrt' -d '{\"contractIDs\": [\""+contract_id+"\"]}' --proxy "+proxy
+        print cmd
         res=os.popen(cmd).read()
         index=res.find('time_total')
         code=json.loads(res[0:index])['meta']['code']

@@ -6,6 +6,7 @@ import Queue
 import json
 import time
 import threading
+from threading import Timer
 import MySQLdb
 import sys, getopt
 import os
@@ -92,8 +93,11 @@ def statistic(title,queue,file):
     print >>file
     print >>file
 
+    bins = int((max-min)/0.01)
+    if bins ==0:
+        bins=1
 
-    plt.hist(data, bins = int((max-min)/0.01), color = 'steelblue', edgecolor = 'k', label = 'title')
+    plt.hist(data, bins = bins, color = 'steelblue', edgecolor = 'k', label = 'title')
     plt.title(title)
     plt.xlabel('Response time (s)')
     plt.ylabel('Count')
@@ -223,10 +227,20 @@ def testPost(url,payload_template,timeout,successQueue,timeoutQueue,failQueue,pa
 
         processResponse(res,timeout,successQueue,timeoutQueue,failQueue,parameters)
 
+def getProgress(total_num,successQueue,timeoutQueue,failQueue):
+    global progress
+    while progress!=100.0:
+        time.sleep(3)
+        processed_num=successQueue.qsize()+timeoutQueue.qsize()+failQueue.qsize()
+        progress=round(float(processed_num)/total_num*100)
+        print total_num,processed_num
+        print progress
+
 
 
 proxy=None
 header=None
+progress=0.0
 
 if __name__=="__main__":
     opts, args = getopt.getopt(sys.argv[1:], "c:u:m:h:t:p:x:")
@@ -298,8 +312,15 @@ if __name__=="__main__":
         t.start()
         threads.append(t)
 
+    t=threading.Thread(target=getProgress,args=(total_num,successQueue,timeoutQueue,failQueue,))
+    t.setDaemon(True)
+    t.start()
+    threads.append(t)
+
     for t in threads:
         t.join()
+
+
 
     statistic('Success',successQueue,result)
     statistic('Timeout',timeoutQueue,result)

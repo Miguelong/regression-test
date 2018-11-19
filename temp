@@ -1,0 +1,18 @@
+db = MySQLdb.connect("model-mysql.internal.gridx.com", "demo", "RE3u6pc8ZYx1c", "test")
+cursor = db.cursor()
+sql = "select apiUrl,concurrentNum,apiMethod,apiHeader,apiPayload,apiTimeout,apiProxy,parameters,report,`repeat` " \
+      "from load_test where id=24"
+cursor.execute(sql)
+res = cursor.fetchone()
+
+
+import csv
+
+stu1 = ['marry','sdfsdf']
+stu2 = ['bob',23]
+out = open('Stu_csv.csv','w+')
+csv_write = csv.writer(out,dialect='excel')
+csv_write.writerow(stu1)
+csv_write.writerow(stu2)
+print ("write over")
+out.close()
